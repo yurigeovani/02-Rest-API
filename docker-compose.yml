@@ -1,0 +1,67 @@
+# version: "3.7"
+
+# services:
+#   database:
+#     image: postgres
+#     # container_name: postgres_apipractice_pg
+#     # restart: always
+#     ports:
+#       - 5432:5432
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=Luma1234
+#       - POSTGRES_DB=restapi_db
+#     volumes:
+#       - /media/yuri/DADOS/Projects/DevFlow/02\ Rest\ API/database:/var/lib/postgresql/data
+#   # apipractice_pg:
+#   #   build: .
+#   #   container_name: apipractice_pg
+#   #   ports:
+#   #     - 3333:3333
+#   #   volumes:
+#   #     - .:/usr/apipractice_pg
+#   #   links:
+#   #     - database
+#   #   depends_on:
+#   #     - database
+
+
+
+
+
+
+
+
+
+
+
+version: "3.7"
+
+services:
+  database:
+    image: postgres
+    container_name: ct_database_pg
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=restapi_db
+    volumes:
+      - pgdata:/data/postgres
+  # restapi:
+  #   build: .
+  #   container_name: ct_restapi_pg
+  #   ports:
+  #     - 3333:3333
+  #   volumes:
+  #     - .:/usr/vl_restapi
+  #   links:
+  #     - database
+  #   depends_on:
+  #     - database
+
+volumes:
+  pgdata:
+    driver: local
