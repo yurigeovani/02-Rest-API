@@ -1,15 +1,10 @@
-const { Pool } = require('pg');
-
-const pool = new Pool({
-    host: 'localhost',
-    user: 'postgres',
-    password: 'postgres',
-    database: 'loja',
-    port: '5432'
-});
+const {pool} = require('../../database/connection')
 
 const getProducts = async (req, res) => {
-    const response = await pool.query('SELECT * FROM PRODUCTS')
+    const response = await pool.query(
+        `SELECT p.id, p.name, p.description, p.price, c.id, c.name
+            FROM products p, categories c
+            WHERE p.category_id = c.id`);
     res.status(200).json(response.rows);
 }
 
