@@ -3,15 +3,22 @@ const {pool} = require('../../database/connection')
 const getProducts = async (req, res) => {
     const response = await pool.query(
         `SELECT p.id, p.name, p.description, p.price, c.id, c.name
-            FROM products p, categories c
-            WHERE p.category_id = c.id`);
+            FROM products p
+            INNER JOIN categories c
+            ON p.category_id = c.id`);
+        // `SELECT p.id, p.name, p.description, p.price
+            // FROM products p`);
     res.status(200).json(response.rows);
 }
 
 const getProductById = async (req, res) => {
     const id = req.params.id;
-    const response = await pool.query('SELECT * FROM PRODUCTS WHERE ID = $1', [id]);
-
+    const response = await pool.query(
+        `SELECT p.id, p.name, p.description, p.price, c.id, c.name
+            FROM products p
+            INNER JOIN categories c
+            ON p.category_id = c.id
+            WHERE p.id = $1`, [id]);
     res.json(response.rows);
 }
 
