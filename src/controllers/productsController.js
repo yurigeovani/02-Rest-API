@@ -2,24 +2,54 @@ const {pool} = require('../../database/connection')
 
 const getProducts = async (req, res) => {
     const response = await pool.query(
-        `SELECT p.id, p.name, p.description, p.price, c.id, c.name
+        `SELECT p.id as PROD_ID,
+                p.name as PROD_NAME,
+                p.description as PROD_DESC,
+                p.price as PROD_PRICE,
+                c.id as CAT_ID,
+                c.name as CAT_NAME
             FROM products p
             INNER JOIN categories c
             ON p.category_id = c.id`);
-        // `SELECT p.id, p.name, p.description, p.price
-            // FROM products p`);
-    res.status(200).json(response.rows);
+    res.status(200).json(response.rows?.map(product => {
+        return {
+            id: product.prod_id,
+            name: product.prod_name,
+            description: product.prod_desc,
+            price: parseFloat(product.prod_price),
+            category: {
+                id: product.cat_id,
+                name: product.cat_name
+            }
+        }
+    }));
 }
 
 const getProductById = async (req, res) => {
     const id = req.params.id;
     const response = await pool.query(
-        `SELECT p.id, p.name, p.description, p.price, c.id, c.name
+        `SELECT p.id as PROD_ID,
+                p.name as PROD_NAME,
+                p.description as PROD_DESC,
+                p.price as PROD_PRICE,
+                c.id as CAT_ID,
+                c.name as CAT_NAME
             FROM products p
             INNER JOIN categories c
             ON p.category_id = c.id
             WHERE p.id = $1`, [id]);
-    res.json(response.rows);
+    res.json(response.rows?.map(product => {
+        return {
+            id: product.prod_id,
+            name: product.prod_name,
+            description: product.prod_desc,
+            price: parseFloat(product.prod_price),
+            category: {
+                id: product.cat_id,
+                name: product.cat_name
+            }
+        }
+    }));
 }
 
 const createProduct = async(req, res) => {
@@ -32,7 +62,7 @@ const createProduct = async(req, res) => {
                 VALUES
                     ($1, $2, $3, $4)`, [name, description, price, category_id]);
 
-    res.json({
+    res.status(201).json({
         message: 'Product Added Succesfully',
         body:{
             product: {name, description, price, category_id}
@@ -48,7 +78,7 @@ const updateProduct = async (req, res) => {
         UPDATE products 
 	        SET (name, description, price, updated_at, category_id) 
                 = ($1, $2, $3, CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE, $4)
-            WHERE ID = ${id}`, [name, description, price, category_id]);
+            WHERE ID = $5`, [name, description, price, category_id, id]);
 
     res.json({
         message: 'Product Updated',

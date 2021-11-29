@@ -1,18 +1,18 @@
 const{pool} = require('../../database/connection')
 
-const getCategories = async(req, res)=>{
+const get = async(req, res)=>{
     const response = await pool.query('SELECT id, name FROM CATEGORIES');
     res.status(200).json(response.rows);
 }
 
-const getCategoryById = async(req, res)=>{
+const getById = async(req, res)=>{
     const id = req.params.id;
     const response = await pool.query('SELECT id, name FROM CATEGORIES WHERE ID = $1',[id]);
 
     res.status(200).json(response.rows);
 }
 
-const createCategory = async(req, res)=>{
+const post = async(req, res)=>{
     const {name} = req.body;
 
     const response = await pool.query('INSERT INTO CATEGORIES (name) VALUES ($1)',[name]);
@@ -25,7 +25,7 @@ const createCategory = async(req, res)=>{
     })
 }
 
-const updateCategory = async(req,res)=>{
+const put = async(req,res)=>{
     const id = req.params.id;
     const {name} = req.body;
 
@@ -43,7 +43,7 @@ const updateCategory = async(req,res)=>{
     })
 }
 
-const deleteCategory = async(req,res)=>{
+const del = async(req,res)=>{
     const id = req.params.id;
 
     const response = await pool.query('DELETE FROM CATEGORIES WHERE ID = $1', [id]);
@@ -54,9 +54,9 @@ const deleteCategory = async(req,res)=>{
 }
 
 module.exports = {
-    getCategories,
-    getCategoryById,
-    createCategory,
-    updateCategory,
-    deleteCategory
+    get,
+    getById,
+    post,
+    put,
+    del
 }
