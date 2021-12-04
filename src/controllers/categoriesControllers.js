@@ -1,23 +1,23 @@
-const{pool} = require('../../database/connection')
+const model = require('../models/categories');
 
-const get = async(req, res)=>{
-    const response = await pool.query('SELECT id, name FROM CATEGORIES');
-    res.status(200).json(response.rows);
+const get = async (req, res) =>{
+    const response = await model.get();
+    res.status(200).json(response);
 }
 
 const getById = async(req, res)=>{
     const id = req.params.id;
-    const response = await pool.query('SELECT id, name FROM CATEGORIES WHERE ID = $1',[id]);
+    const response = await model.getById(id);
 
-    res.status(200).json(response.rows);
+    res.status(200).json(response);
 }
 
 const post = async(req, res)=>{
     const {name} = req.body;
 
-    const response = await pool.query('INSERT INTO CATEGORIES (name) VALUES ($1)',[name]);
+    const response = await model.post(name);
 
-    res.json({
+    res.status(201).json({
         message: 'Category was added succesfully!',
         body: {
             category: {name}
@@ -29,13 +29,9 @@ const put = async(req,res)=>{
     const id = req.params.id;
     const {name} = req.body;
 
-    const response = await pool.query(
-           `UPDATE categories 
-	        SET (name, updated_at)
-            = ($1,CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE)
-            WHERE ID = $2`,[name,id]);
+    const response = await model.put(id, name);
     
-    res.json({
+    res.status(200).json({
         message: 'Category was updated succesfully!',
         body:{
             category: {name}
@@ -45,11 +41,12 @@ const put = async(req,res)=>{
 
 const del = async(req,res)=>{
     const id = req.params.id;
+    const [category] = await model.getById(id);
+    
+    await model.del(id);
 
-    const response = await pool.query('DELETE FROM CATEGORIES WHERE ID = $1', [id]);
-
-    res.json({
-        message: 'Category was deleted succesfully!'
+    res.status(200).json({
+        message: `Category ${category.name} was deleted succesfully!`
     })
 }
 
