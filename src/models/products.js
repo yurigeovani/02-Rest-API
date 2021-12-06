@@ -1,6 +1,7 @@
-const{pool} = require('../../database/connection');
+import {pool} from '../../database/connection.js'
+import { Product } from './Product.js';
 
-const get = async () => {
+const getProducts = async () => {
     const response = await pool.query(
         `SELECT p.id as PROD_ID,
                 p.name as PROD_NAME,
@@ -15,7 +16,7 @@ const get = async () => {
     return response.rows;
 }
 
-const getById = async (id) => {
+const getProductById = async (id) => {
     const response = await pool.query(
         `SELECT p.id as PROD_ID,
                 p.name as PROD_NAME,
@@ -30,16 +31,24 @@ const getById = async (id) => {
     return response.rows;
 }
 
-const post = async(name, description, price, category_id) => {
+const postProduct = async(name, description, price, category_id) => {
+    const product = new Product();
+    Object.assign(product, {
+        name,
+        description,
+        price,
+        category_id
+    })
+
     await pool.query(`
             INSERT 
                 INTO products 
-                    (name, description, price, category_id)
+                    (id, name, description, price, category_id)
                 VALUES
-                    ($1, $2, $3, $4)`, [name, description, price, category_id]);
+                    ($1, $2, $3, $4, $5)`, [product.id, product.name, product.description, product.price, product.category_id]);
 }
 
-const put = async (name, description, price, category_id, id) => {
+const putProduct = async (name, description, price, category_id, id) => {
     const response = await pool.query(`
         UPDATE products 
 	        SET (name, description, price, updated_at, category_id) 
@@ -47,17 +56,15 @@ const put = async (name, description, price, category_id, id) => {
             WHERE ID = $5`, [name, description, price, category_id, id]);
 }
 
-const del = async (id) => {
+const deleteProduct = async (id) => {
     const response = await pool.query('DELETE FROM PRODUCTS WHERE ID = $1', [id])
 }
 
 
-
-
-module.exports = {
-    get,
-    getById,
-    post,
-    put,
-    del
+export {
+    getProducts,
+    getProductById,
+    postProduct,
+    putProduct,
+    deleteProduct
 }
